@@ -4,9 +4,16 @@ import { useState, useEffect } from 'react';
 import FoodCategoryColumn from '@/components/FoodCategoryColumn';
 import { supabase } from '@/lib/supabaseClient';
 
+const CATEGORY_ORDER = ['produce', 'meats', 'dairy', 'pantry/grains', 'frozen', 'miscellaneous'];
+
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [finalData, setFinalData] = useState<{ [key: string]: Ingredient[] }>({});
+  const [finalData, setFinalData] = useState<{ [key: string]: Ingredient[] }>(() =>
+    CATEGORY_ORDER.reduce((acc, cat) => {
+      acc[cat] = [];
+      return acc;
+    }, {} as { [key: string]: Ingredient[] })
+  );
 
   interface Ingredient {
     name: string;
@@ -22,9 +29,14 @@ export default function HomePage() {
         console.error('Error fetching ingredients:', error.message);
         return;
       }
-      const grouped: { [key: string]: Ingredient[] } = {};
+
+      const grouped: { [key: string]: Ingredient[] } = CATEGORY_ORDER.reduce((acc, cat) => {
+        acc[cat] = [];
+        return acc;
+      }, {} as { [key: string]: Ingredient[] });
+
       data?.forEach((item) => {
-        const category = item.category || 'uncategorized';
+        const category = item.category || 'miscellaneous';
         if (!grouped[category]) grouped[category] = [];
         grouped[category].push({
           name: item.name,
@@ -33,6 +45,7 @@ export default function HomePage() {
           expirationDate: item.expiration_date,
         });
       });
+
       setFinalData(grouped);
     };
 
@@ -46,43 +59,6 @@ export default function HomePage() {
       )
       .sort((a, b) => Date.parse(a.expirationDate) - Date.parse(b.expirationDate));
 
-      useEffect(() => {
-        const fetchIngredients = async () => {
-          const { data, error } = await supabase.from('ingredients').select('*');
-          if (error) {
-            console.error('Error fetching ingredients:', error.message);
-            return;
-          }
-    
-          const categoryOrder = ['produce', 'meats', 'dairy', 'pantry/grains', 'frozen', 'miscellaneous'];
-          const grouped: { [key: string]: Ingredient[] } = {};
-    
-          categoryOrder.forEach((cat) => {
-            grouped[cat] = [];
-          });
-    
-          data?.forEach((item) => {
-            const category = item.category || 'uncategorized';
-            if (!grouped[category]) grouped[category] = [];
-            grouped[category].push({
-              name: item.name,
-              quantity: item.quantity,
-              unit: item.unit,
-              expirationDate: item.expiration_date,
-            });
-          });
-    
-          const orderedGrouped: { [key: string]: Ingredient[] } = {};
-          categoryOrder.forEach((cat) => {
-            orderedGrouped[cat] = grouped[cat] || [];
-          });
-    
-          setFinalData(orderedGrouped);
-        };
-    
-        fetchIngredients();
-      }, []);
-    
   return (
     <div className="min-h-screen bg-orange-300 px-6 py-8">
       <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">Home</h1>
@@ -99,11 +75,11 @@ export default function HomePage() {
 
       {Object.keys(finalData).length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-          {Object.entries(finalData).map(([category, items]) => (
+          {CATEGORY_ORDER.map((category) => (
             <FoodCategoryColumn
               key={category}
               category={category}
-              ingredients={filterIngredients(items)}
+              ingredients={filterIngredients(finalData[category])}
             />
           ))}
         </div>
