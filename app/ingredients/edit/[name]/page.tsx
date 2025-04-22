@@ -1,12 +1,14 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function EditIngredientPage() {
   const { name } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const dateParam = searchParams.get('expiration_date') || '';
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
@@ -20,6 +22,7 @@ export default function EditIngredientPage() {
         .from('ingredients')
         .select('*')
         .eq('name', decodeURIComponent(name as string))
+        .eq('expiration_date', dateParam)
         .single();
 
       if (error) {
@@ -66,8 +69,7 @@ export default function EditIngredientPage() {
     if (error) {
       console.error('Failed to update ingredient:', error.message);
       return;
-    }const supabaseUrl = 'https://lfhkwoykslzcebyrzgli.supabase.co';
-    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmaGt3b3lrc2x6Y2VieXJ6Z2xpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUyNjgyODgsImV4cCI6MjA2MDg0NDI4OH0.A2SqJ9B8Xz4cScqOv9aW16Db7B7VSH_H7rwjZDcaIXA';
+    }
 
     setShowPopup(true);
     setTimeout(() => {
@@ -112,9 +114,38 @@ export default function EditIngredientPage() {
           <input type="date" value={expirationDate} onChange={(e) => setExpirationDate(e.target.value)}
                  className="w-full p-2 border border-black rounded mt-1" />
         </div>
-        <button type="submit" className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-100">
-          Save Changes
-        </button>
+        <div className="flex justify-center space-x-4 pt-2">
+          <button
+            type="submit"
+            className="w-32 bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-100"
+          >
+            Save Changes
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              const confirmDelete = confirm('Are you sure you want to delete this ingredient?');
+              if (!confirmDelete) return;
+
+              const { error } = await supabase
+                .from('ingredients')
+                .delete()
+                .eq('name', decodeURIComponent(name as string))
+                .eq('unit', originalData.unit)
+                .eq('expiration_date', originalData.expiration_date);
+
+              if (error) {
+                console.error('Failed to delete ingredient:', error.message);
+                return;
+              }
+
+              router.push('/home');
+            }}
+            className="w-32 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Delete
+          </button>
+        </div>
       </form>
     </div>
   );

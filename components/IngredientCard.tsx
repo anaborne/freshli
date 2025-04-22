@@ -24,7 +24,7 @@ export default function IngredientCard({ name, quantity, unit, expirationDate }:
         title = 'Fresh';
     }
     return (
-        <Link href={`/ingredients/edit/${encodeURIComponent(name)}`} className="block">
+        <Link href={`/ingredients/edit/${encodeURIComponent(name)}?expiration_date=${expirationDate}`} className="block">
             <div className={`flex justify-between items-start ${bgColor} shadow-lg rounded-lg p-4 h-24`} title={title}>
                 <div className="w-2/3">
                     <h2 className="text-xl font-bold text-black truncate" title={name}>
