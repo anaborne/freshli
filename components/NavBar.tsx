@@ -12,7 +12,7 @@ export default function Navbar() {
         : 'text-gray-700 hover:text-amber-600';
   
     return (
-      <nav className="w-full bg-amber-300 shadow sticky top-0 left-0 z-50">
+      <nav className="w-full bg-green-300 shadow sticky top-0 left-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <h1 className="text-xl font-bold text-amber-600">🥬 Freshli</h1>
           <div className="space-x-4 text-sm">
