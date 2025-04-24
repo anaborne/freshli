@@ -1,10 +1,7 @@
 import Link from 'next/link';
-type Props = {
-    name: string;
-    quantity: string;
-    unit: string;
-    expirationDate: string;
-};
+import { Ingredient } from '@/types/ingredient';
+
+type Props = Ingredient;
 
 export default function IngredientCard({ name, quantity, unit, expirationDate }: Props) {
     // Determine expiration status and card color

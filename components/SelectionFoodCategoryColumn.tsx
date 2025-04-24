@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import IngredientCard from './IngredientCard';
+import SelectionIngredientCard from './SelectionIngredientCard';
 import { Ingredient } from '@/types/ingredient';
 
 type Props = {
   category: string;
   ingredients: Ingredient[];
+  selectedIngredients: Ingredient[];
+  toggleSelect: (ingredient: Ingredient) => void;
 };
 
-export default function FoodCategoryColumn({ category, ingredients }: Props) {
+export default function SelectionFoodCategoryColumn({ category, ingredients, selectedIngredients, toggleSelect }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isScrollable, setIsScrollable] = useState(false);
   const [showScrollArrow, setShowScrollArrow] = useState(false);
@@ -52,12 +54,11 @@ export default function FoodCategoryColumn({ category, ingredients }: Props) {
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3">
         {ingredients.map((ingredient, idx) => (
-          <IngredientCard
+          <SelectionIngredientCard
             key={idx}
-            name={ingredient.name}
-            quantity={ingredient.quantity}
-            unit={ingredient.unit}
-            expirationDate={ingredient.expirationDate}
+            ingredient={ingredient}
+            isSelected={selectedIngredients.some(item => item.name === ingredient.name)}
+            toggleSelect={toggleSelect}
           />
         ))}
       </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import FoodCategoryColumn from '@/components/FoodCategoryColumn';
 import { supabase } from '@/lib/supabaseClient';
+import { Ingredient } from '@/types/ingredient';
 
 const CATEGORY_ORDER = ['produce', 'meats', 'dairy', 'pantry/grains', 'frozen', 'miscellaneous'];
 
@@ -14,13 +15,6 @@ export default function HomePage() {
       return acc;
     }, {} as { [key: string]: Ingredient[] })
   );
-
-  interface Ingredient {
-    name: string;
-    quantity: string;
-    unit: string;
-    expirationDate: string;
-  }
 
   useEffect(() => {
     const fetchIngredients = async () => {
