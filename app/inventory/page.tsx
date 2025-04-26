@@ -147,21 +147,21 @@ export default function InventoryPage() {
     };
 
     return (
-      <div className="min-h-screen p-8 bg-orange-300 relative">
+      <div className="min-h-screen p-8 bg-[#fccb82] relative">
         <button
           onClick={() => window.history.back()}
-          className="absolute top-4 left-4 bg-yellow-500 px-3 py-1 rounded text-black font-semibold shadow hover:bg-yellow-100"
+          className="absolute top-4 left-4 bg-[#70994D] px-3 py-1 rounded text-white font-semibold shadow hover:bg-[#5a7d3c]"
         >
           ← Back
         </button>
 
-        <h1 className="text-2xl font-bold mb-6 text-center text-black">
+        <h1 className="text-2xl font-bold mb-6 text-center text-[#70994D]">
           {isManualUpload ? "Manual Upload" : "Image Upload"}
         </h1>
 
         <button
           onClick={toggleUploadMode}
-          className="block mx-auto mb-6 bg-yellow-500 text-black px-4 py-2 rounded font-semibold shadow hover:bg-yellow-100"
+          className="block mx-auto mb-6 bg-[#70994D]  text-white px-4 py-2 rounded font-semibold shadow hover:bg-[#5a7d3c]"
         >
           {isManualUpload ? "Switch to Image Upload" : "Switch to Manual Upload"}
         </button>
@@ -169,54 +169,54 @@ export default function InventoryPage() {
         {isManualUpload ? (
           <form
             onSubmit={handleManualSubmit}
-            className="max-w-md mx-auto bg-orange-500 p-6 rounded shadow space-y-4"
+            className="max-w-md mx-auto bg-[#faa424] p-6 rounded shadow space-y-4"
           >
             {saved && (
-              <div className="text-center text-black bg-yellow-300 rounded p-2 font-semibold shadow">
+              <div className="text-center text-[#70994D] bg-green-600 rounded p-2 font-semibold shadow">
                 Saved!
               </div>
             )}
 
             <div>
-              <label className="block font-semibold text-black">Name</label>
+              <label className="block font-semibold text-[#70994D]">Name</label>
               <input
-                className="w-full p-2 border border-black rounded mt-1"
+                className="w-full p-2 border border-[#70994D] rounded mt-1"
                 placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div>
-              <label className="block font-semibold text-black">Quantity</label>
+              <label className="block font-semibold text-[#70994D]">Quantity</label>
               <input
-                className="w-full p-2 border border-black rounded mt-1"
+                className="w-full p-2 border border-[#70994D] rounded mt-1"
                 placeholder="Quantity"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
             </div>
             <div>
-              <label className="block font-semibold text-black">Unit</label>
+              <label className="block font-semibold text-[#70994D]">Unit</label>
               <input
-                className="w-full p-2 border border-black rounded mt-1"
+                className="w-full p-2 border border-[#70994D] rounded mt-1"
                 placeholder="Unit"
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
               />
             </div>
             <div>
-              <label className="block font-semibold text-black">Expiration Date</label>
+              <label className="block font-semibold text-[#70994D]">Expiration Date</label>
               <input
-                className="w-full p-2 border border-black rounded mt-1"
+                className="w-full p-2 border border-[#70994D] rounded mt-1"
                 type="date"
                 value={expirationDate}
                 onChange={(e) => setExpirationDate(e.target.value)}
               />
             </div>
             <div>
-              <label className="block font-semibold text-black">Category</label>
+              <label className="block font-semibold text-[#70994D]">Category</label>
               <select
-                className="w-full p-2 border border-black rounded mt-1"
+                className="w-full p-2 border border-[#70994D] rounded mt-1"
                 value={category}
                 onChange={(e) => setCategory(e.target.value.toLowerCase())}
               >
@@ -233,14 +233,14 @@ export default function InventoryPage() {
               type="submit"
               disabled={!isFormComplete || isSaving}
               className={`w-full p-2 rounded font-semibold ${
-                isFormComplete ? 'bg-yellow-500 text-black hover:bg-yellow-100' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                isFormComplete ? 'bg-[#70994D] text-white hover:bg-[#5a7d3c]' : 'bg-gray-400 text-white cursor-not-allowed'
               }`}
             >
               {isSaving ? "Saving..." : "Save"}
             </button>
           </form>
         ) : (
-          <div className="max-w-md mx-auto bg-orange-500 p-6 rounded shadow text-black space-y-4">
+          <div className="max-w-md mx-auto bg-[#faa424] p-6 rounded shadow text-[#70994D] space-y-4">
             <input
               ref={fileInputRef}
               type="file"
@@ -251,7 +251,7 @@ export default function InventoryPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="bg-yellow-500 text-black px-4 py-2 rounded font-semibold shadow hover:bg-yellow-100 w-full"
+              className="bg-[#70994D] text-white px-4 py-2 rounded font-semibold shadow hover:bg-[#5a7d3c] w-full"
             >
               Upload Image
             </button>
@@ -260,25 +260,25 @@ export default function InventoryPage() {
                 <img
                   src={`data:image/jpeg;base64,${uploadedImage}`}
                   alt="Preview"
-                  className="w-full max-h-64 object-contain rounded border border-black"
+                  className="w-full max-h-64 object-contain rounded border border-[#faa424] shadow"
                 />
                 <button
                   type="button"
                   onClick={handleImageSubmit}
-                  className="bg-yellow-500 text-black px-4 py-2 rounded font-semibold shadow hover:bg-yellow-100 w-full"
+                  className="bg-[#70994D] text-white px-4 py-2 rounded font-semibold shadow hover:bg-[#5a7d3c] w-full"
                 >
                   Submit
                 </button>
               </div>
             )}
             {showToast && (
-              <div className="text-center text-black bg-yellow-300 rounded p-2 font-semibold shadow">
+              <div className="text-center text-[#70994D] bg-[#70994D] rounded p-2 font-semibold shadow">
                 ✅ Ingredients added!
               </div>
             )}
             {loading && (
               <div className="flex justify-center mt-4">
-                <div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-[#70994D] border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
             {recognized.length > 0 && (
@@ -290,8 +290,8 @@ export default function InventoryPage() {
                   return (
                     <div
                       key={i}
-                      className={`p-3 rounded border shadow-sm space-y-2 ${
-                        isItemComplete ? 'border-green-500 bg-green-100' : 'border-red-500 bg-red-100'
+                      className={`p-3  rounded border shadow-sm space-y-2 ${
+                        isItemComplete ? 'border-green-700 border-3 bg-[#fccb82]' : 'border-red-600 border-3 bg-[#fccb82]'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -315,7 +315,7 @@ export default function InventoryPage() {
                             onClick={() =>
                               setExpandedIndex(isExpanded ? null : i)
                             }
-                            className="text-black font-bold"
+                            className="text-[#70994D] font-bold"
                             title="Toggle Details"
                           >
                             {isExpanded ? '▲' : '▼'}
@@ -366,7 +366,7 @@ export default function InventoryPage() {
                           </select>
                           <button
                             onClick={() => setExpandedIndex(null)}
-                            className="w-full bg-yellow-500 text-black py-1 px-2 rounded font-semibold hover:bg-yellow-400"
+                            className="w-full bg-[#70994D] text-white py-1 px-2 rounded font-semibold hover:bg-[#5a7d3c]"
                           >
                             Save & Collapse
                           </button>
@@ -377,14 +377,14 @@ export default function InventoryPage() {
                 })}
                 <button
                   onClick={() => {
-                    const newIndex = recognized.length;
-                    setRecognized([
-                      ...recognized,
-                      { name: '', quantity: '', unit: '', expirationDate: '', category: '' }
-                    ]);
-                    setExpandedIndex(newIndex);
+                  const newIndex = recognized.length;
+                  setRecognized([
+                    ...recognized,
+                    { name: '', quantity: '', unit: '', expirationDate: '', category: '' }
+                  ]);
+                  setExpandedIndex(newIndex);
                   }}
-                  className="w-full px-4 py-2 rounded font-semibold bg-yellow-500 text-black hover:bg-yellow-400"
+                  className="w-full px-4 py-2 rounded font-semibold bg-[#70994D] text-white hover:bg-[#5a7d3c]"
                 >
                   + Add Ingredient
                 </button>
@@ -393,8 +393,8 @@ export default function InventoryPage() {
                   disabled={!allComplete}
                   className={`w-full px-4 py-2 rounded font-semibold ${
                     allComplete
-                      ? 'bg-yellow-500 text-black hover:bg-yellow-400'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? 'bg-[#70994D] text-white hover:bg-[#5a7d3c]'
+                      : 'bg-gray-400 text-white cursor-not-allowed'
                   }`}
                 >
                   Confirm & Add Ingredients

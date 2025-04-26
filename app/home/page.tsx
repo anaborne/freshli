@@ -54,8 +54,8 @@ export default function HomePage() {
       .sort((a, b) => Date.parse(a.expirationDate) - Date.parse(b.expirationDate));
 
   return (
-    <div className="min-h-screen bg-orange-300 px-6 py-8">
-      <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">Home</h1>
+    <div className="min-h-screen bg-[#fccb82] px-6 py-8">
+      <h1 className="text-3xl font-bold text-center mb-4 text-[#70994D]">Home</h1>
 
       <div className="max-w-xl mx-auto mb-8">
         <input

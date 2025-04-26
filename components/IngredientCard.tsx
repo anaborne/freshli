@@ -4,8 +4,8 @@ import { Ingredient } from '@/types/ingredient';
 type Props = Ingredient;
 
 export default function IngredientCard({ name, quantity, unit, expirationDate }: Props) {
-    // Determine expiration status and card color
-    let bgColor = 'bg-orange-300';
+    // Determine expiration status and card border color
+    let borderColor = 'border-orange-300';
     let title = '';
     const today = new Date();
     const expDate = new Date(expirationDate);
@@ -13,23 +13,24 @@ export default function IngredientCard({ name, quantity, unit, expirationDate }:
     const daysDiff = Math.ceil((expDate.getTime() - today.setHours(0,0,0,0)) / (1000 * 60 * 60 * 24));
     if (expDate < today) {
         title = 'Expired';
-        bgColor = 'bg-red-500';
+        borderColor = 'border-red-500';
     } else if (daysDiff <= 7) {
         title = 'Expiring soon';
-        bgColor = 'bg-yellow-400';
+        borderColor = 'border-yellow-300';
     } else {
-        title = 'Fresh';
+        title = 'Fresh'
+        borderColor = 'border-green-600';
     }
     return (
         <Link href={`/ingredients/edit/${encodeURIComponent(name)}?expiration_date=${expirationDate}`} className="block">
-            <div className={`flex justify-between items-start ${bgColor} shadow-lg rounded-lg p-4 h-24`} title={title}>
+            <div className={`flex justify-between items-start bg-[#fccb82] shadow-lg rounded-lg p-4 h-24 border-4 ${borderColor}`} title={title}>
                 <div className="w-2/3">
-                    <h2 className="text-xl font-bold text-black truncate" title={name}>
+                    <h2 className="text-xl font-bold text-[#70994D] truncate" title={name}>
                         {name}
                     </h2>
-                    <p className="text-gray-700 text-sm">Expires on: {expirationDate}</p>
+                    <p className="text-[#70994D] text-sm">Expires on: {expirationDate}</p>
                 </div>
-                <div className="text-right text-gray-700 text-2xl font-semibold">
+                <div className="text-right text-[#70994D] text-2xl font-semibold">
                     {quantity} {unit}
                 </div>
             </div>

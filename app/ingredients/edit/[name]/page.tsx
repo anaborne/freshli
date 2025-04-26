@@ -79,45 +79,45 @@ export default function EditIngredientPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-orange-300 relative">
-      <button onClick={() => router.push('/home')} className="absolute top-4 left-4 bg-yellow-500 px-3 py-1 rounded text-black font-semibold shadow hover:bg-yellow-100">
+    <div className="min-h-screen p-8 bg-[#faa424] relative">
+      <button onClick={() => router.push('/home')} className="absolute top-4 left-4 bg-[#70994D] px-3 py-1 rounded text-white font-semibold shadow hover:bg-yellow-100">
         ← Back
       </button>
 
-      <h1 className="text-2xl font-bold mb-6 text-center text-black">{decodeURIComponent(name as string)}</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center text-white">{decodeURIComponent(name as string)}</h1>
 
       {showPopup && (
-        <div className="mb-4 text-center text-black bg-yellow-300 rounded p-2 font-semibold shadow">
+        <div className="mb-4 text-center text-black bg-green-600 rounded p-2 font-semibold shadow">
           Saved!
         </div>
       )}
 
       {showError && (
-        <div className="mb-4 text-center text-black bg-red-400 rounded p-2 font-semibold shadow">
+        <div className="mb-4 text-center text-white bg-red-600 rounded p-2 font-semibold shadow">
           No changes made.
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-orange-500 p-6 rounded shadow space-y-4">
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-[#e77c10] p-6 rounded shadow space-y-4">
         <div>
-          <label className="block font-semibold text-black">Quantity</label>
+          <label className="block font-semibold text-white">Quantity</label>
           <input type="text" value={quantity} onChange={(e) => setQuantity(e.target.value)}
-                 className="w-full p-2 border border-black rounded mt-1" />
+                 className="w-full p-2 border border-white rounded mt-1" />
         </div>
         <div>
-          <label className="block font-semibold text-black">Unit</label>
+          <label className="block font-semibold text-white">Unit</label>
           <input type="text" value={unit} onChange={(e) => setUnit(e.target.value)}
-                 className="w-full p-2 border border-black rounded mt-1" />
+                 className="w-full p-2 border border-white rounded mt-1" />
         </div>
         <div>
-          <label className="block font-semibold text-black">Expiration Date</label>
+          <label className="block font-semibold text-white">Expiration Date</label>
           <input type="date" value={expirationDate} onChange={(e) => setExpirationDate(e.target.value)}
-                 className="w-full p-2 border border-black rounded mt-1" />
+                 className="w-full p-2 border border-white rounded mt-1" />
         </div>
         <div className="flex justify-center space-x-4 pt-2">
           <button
             type="submit"
-            className="w-32 bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-100"
+            className="w-32 bg-[#70994D] text-white px-4 py-2 rounded hover:bg-[#5a7d3c]"
           >
             Save Changes
           </button>
@@ -141,7 +141,7 @@ export default function EditIngredientPage() {
 
               router.push('/home');
             }}
-            className="w-32 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            className="w-32 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
           >
             Delete
           </button>

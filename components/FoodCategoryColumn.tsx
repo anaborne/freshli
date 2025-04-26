@@ -39,8 +39,8 @@ export default function FoodCategoryColumn({ category, ingredients }: Props) {
   }, [ingredients]);
 
   return (
-    <div className="w-full  h-134 border border-amber-500 rounded-lg shadow-md p-4 bg-amber-500 flex flex-col">
-      <h2 className="text-xl font-bold mb-3 text-center capitalize text-zinc-950">
+    <div className="w-full  h-134 border border-amber-500 rounded-lg shadow-md p-4 bg-[#faa422] flex flex-col">
+      <h2 className="text-xl font-bold mb-3 text-center capitalize text-[#70994D]">
         {category}
       </h2>
 

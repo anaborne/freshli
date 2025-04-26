@@ -9,25 +9,26 @@ type Props = {
 export default function SelectionIngredientCard({ ingredient, isSelected, toggleSelect }: Props) {
   const { name, quantity, unit, expirationDate } = ingredient;
 
-  let bgColor = 'bg-orange-300';
+  let borderColor = 'border-orange-300';
   let title = '';
   const today = new Date();
   const expDate = new Date(expirationDate);
 
-  const daysDiff = Math.ceil((expDate.getTime() - today.setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24));
+  const daysDiff = Math.ceil((expDate.getTime() - today.setHours(0,0,0,0)) / (1000 * 60 * 60 * 24));
   if (expDate < today) {
     title = 'Expired';
-    bgColor = 'bg-red-500';
+    borderColor = 'border-red-500';
   } else if (daysDiff <= 7) {
     title = 'Expiring soon';
-    bgColor = 'bg-yellow-400';
+    borderColor = 'border-yellow-300';
   } else {
     title = 'Fresh';
+    borderColor = 'border-green-600';
   }
 
   return (
     <div
-      className={`flex justify-between items-start ${bgColor} shadow-lg rounded-lg p-4 h-24 cursor-pointer border ${isSelected ? 'border-black' : 'border-transparent'}`}
+      className={`flex justify-between items-start bg-[#fccb82] shadow-lg rounded-lg p-4 h-24 cursor-pointer border-4 ${borderColor}`}
       title={title}
       onClick={() => toggleSelect(ingredient)}
     >
@@ -36,17 +37,17 @@ export default function SelectionIngredientCard({ ingredient, isSelected, toggle
           type="checkbox"
           checked={isSelected}
           onChange={() => {}}
-          className="form-checkbox mt-1 accent-black"
+          className="form-checkbox mt-1 accent-[#70994D]"
           readOnly
         />
         <div>
-          <h2 className="text-xl font-bold text-black truncate" title={name}>
+          <h2 className="text-xl font-bold text-[#70994D] truncate" title={name}>
             {name}
           </h2>
-          <p className="text-gray-700 text-sm">Expires on: {expirationDate}</p>
+          <p className="text-[#70994D] text-sm">Expires on: {expirationDate}</p>
         </div>
       </div>
-      <div className="text-right text-gray-700 text-2xl font-semibold">
+      <div className="text-right text-[#70994D] text-2xl font-semibold">
         {quantity} {unit}
       </div>
     </div>

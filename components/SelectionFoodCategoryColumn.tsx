@@ -41,8 +41,8 @@ export default function SelectionFoodCategoryColumn({ category, ingredients, sel
   }, [ingredients]);
 
   return (
-    <div className="w-full  h-134 border border-amber-500 rounded-lg shadow-md p-4 bg-amber-500 flex flex-col">
-      <h2 className="text-xl font-bold mb-3 text-center capitalize text-zinc-950">
+    <div className="w-full h-134 border border-amber-500 rounded-lg shadow-md p-4 bg-[#faa424] flex flex-col">
+      <h2 className="text-xl font-bold mb-3 text-center capitalize text-[#70994D]">
         {category}
       </h2>
 
