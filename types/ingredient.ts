@@ -1,6 +1,6 @@
 export type Ingredient = {
     name: string;
-    quantity: string;
+    quantity: string | number;
     unit: string;
     expirationDate: string;
     category?: string;

@@ -19,12 +19,23 @@ export default function HomePage() {
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
   const [showOverlay, setShowOverlay] = useState(false);
 
-  const toggleSelect = (ingredient: Ingredient) => {
-    setSelectedIngredients((prev) =>
-      prev.some((item) => item.name === ingredient.name)
-        ? prev.filter((item) => item.name !== ingredient.name)
-        : [...prev, ingredient]
-    );
+  const toggleSelect = (ingredient: Ingredient, quantity?: number) => {
+    setSelectedIngredients((prev) => {
+      // Check if ingredient is already selected
+      const existingIndex = prev.findIndex(item => item.name === ingredient.name);
+      
+      if (existingIndex >= 0) {
+        // If ingredient is already selected, remove it
+        return prev.filter((item) => item.name !== ingredient.name);
+      } else {
+        // If ingredient is not selected, add it with the specified quantity
+        const newIngredient = { ...ingredient };
+        if (quantity !== undefined) {
+          newIngredient.quantity = quantity;
+        }
+        return [...prev, newIngredient];
+      }
+    });
   };
 
   const groupedSelected = selectedIngredients.reduce<Record<string, string[]>>((acc, item) => {
@@ -73,61 +84,65 @@ export default function HomePage() {
       .sort((a, b) => Date.parse(a.expirationDate) - Date.parse(b.expirationDate));
 
   return (
-    <div className="min-h-screen bg-[#fccb82] px-6 py-8 relative">
-      <div className="flex flex-col items-center mb-8">
-        <div className="flex w-full justify-between mb-4">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowOverlay(!showOverlay)}
-              className="bg-[#70994D] hover:bg-[#5a7d3c] px-3 py-1 rounded shadow text-white font-semibold"
-            >
-              {showOverlay ? 'Hide Selected' : 'View Selected'}
-            </button>
+    <div className="min-h-screen bg-[#fccb82] px-6 pt-4 pb-8 relative">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col items-center mb-6">
+          <div className="flex w-full justify-between mb-4">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowOverlay(!showOverlay)}
+                className="bg-[#70994D] hover:bg-[#5a7d3c] px-3 py-1 rounded shadow text-white font-semibold"
+              >
+                {showOverlay ? 'Hide Selected' : 'View Selected'}
+              </button>
+              <button
+                onClick={() => {
+                  const allIngredients = Object.values(finalData).flat();
+                  setSelectedIngredients(allIngredients);
+                }}
+                className="bg-[#70994D] hover:bg-[#5a7d3c] px-3 py-1 rounded shadow text-white font-semibold"
+              >
+                Select All
+              </button>
+            </div>
+
             <button
               onClick={() => {
-                const allIngredients = Object.values(finalData).flat();
-                setSelectedIngredients(allIngredients);
+                const selected = JSON.stringify(selectedIngredients);
+                localStorage.setItem('selectedIngredients', selected);
+                window.location.href = '/recipes/filters';
               }}
               className="bg-[#70994D] hover:bg-[#5a7d3c] px-3 py-1 rounded shadow text-white font-semibold"
             >
-              Select All
+              Next
             </button>
           </div>
 
-          <button
-            onClick={() => {
-              const selected = JSON.stringify(selectedIngredients);
-              localStorage.setItem('selectedIngredients', selected);
-              window.location.href = '/recipes/filters';
-            }}
-            className="bg-[#70994D] hover:bg-[#5a7d3c] px-3 py-1 rounded shadow text-white font-semibold"
-          >
-            Next
-          </button>
+          <h1 className="text-3xl font-bold text-white text-center">
+            Select Ingredients
+          </h1>
         </div>
-
-        <h1 className="text-3xl font-bold text-[#70994D] text-center">
-          Select Ingredients
-        </h1>
       </div>
 
-      <div className="max-w-xl mx-auto mb-8">
-        <input
-          type="text"
-          placeholder="Search for an ingredient..."
-          className="w-full p-3 rounded-lg border border-amber-500 shadow-sm text-amber-800"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      <div className="max-w-xl mx-auto mb-6">
+        <div className="bg-[#faa424ff] rounded-lg shadow p-6">
+          <input
+            type="text"
+            placeholder="Search for an ingredient..."
+            className="w-full p-2 border border-[#fccb82] rounded bg-[#fccb82] text-white placeholder-white/70 text-base font-normal"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       {showOverlay && (
-        <div className="absolute left-0 top-20 bg-white shadow-lg border rounded p-4 w-64 max-h-[80vh] flex flex-col overflow-hidden z-50">
+        <div className="absolute left-0 top-20 bg-[#faa424ff] shadow-lg border rounded p-4 w-64 max-h-[80vh] flex flex-col overflow-hidden z-50">
           <div className="overflow-y-auto flex-1">
             {Object.entries(groupedSelected).map(([category, items]) => (
               <div key={category} className="mb-2">
-                <h2 className="font-bold text-sm text-black mb-1 capitalize">{category}</h2>
-                <ul className="pl-4 list-disc text-sm text-gray-700">
+                <h2 className="font-bold text-sm text-white mb-1 capitalize">{category}</h2>
+                <ul className="pl-4 list-disc text-sm text-white">
                   {items.map((name) => (
                     <li key={name}>{name}</li>
                   ))}

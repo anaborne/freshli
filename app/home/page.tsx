@@ -55,16 +55,20 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#fccb82] px-6 py-8">
-      <h1 className="text-3xl font-bold text-center mb-4 text-[#70994D]">Home</h1>
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-center mb-8 text-white">Home</h1>
+      </div>
 
       <div className="max-w-xl mx-auto mb-8">
-        <input
-          type="text"
-          placeholder="Search for an ingredient..."
-          className="w-full p-3 rounded-lg border border-amber-500 shadow-sm text-amber-800"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <div className="bg-[#faa424ff] rounded-lg shadow p-6">
+          <input
+            type="text"
+            placeholder="Search for an ingredient..."
+            className="w-full p-2 border border-[#fccb82] rounded bg-[#fccb82] text-white placeholder-white/70"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       {Object.keys(finalData).length > 0 && (

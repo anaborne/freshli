@@ -23,15 +23,15 @@ export default function IngredientCard({ name, quantity, unit, expirationDate }:
     }
     return (
         <Link href={`/ingredients/edit/${encodeURIComponent(name)}?expiration_date=${expirationDate}`} className="block">
-            <div className={`flex justify-between items-start bg-[#fccb82] shadow-lg rounded-lg p-4 h-24 border-4 ${borderColor}`} title={title}>
-                <div className="w-2/3">
-                    <h2 className="text-xl font-bold text-[#70994D] truncate" title={name}>
-                        {name}
-                    </h2>
-                    <p className="text-[#70994D] text-sm">Expires on: {expirationDate}</p>
-                </div>
-                <div className="text-right text-[#70994D] text-2xl font-semibold">
-                    {quantity} {unit}
+            <div className={`p-4 rounded-lg shadow-md bg-[#fccb82] border-2 ${borderColor}`}>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h3 className="text-lg font-semibold text-white mb-1">{name}</h3>
+                        <p className="text-sm text-white/90">Expires: {expirationDate}</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-lg font-semibold text-white">{quantity} {unit}</p>
+                    </div>
                 </div>
             </div>
         </Link>

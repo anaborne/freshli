@@ -46,17 +46,6 @@ export default function EditIngredientPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const noChanges =
-      quantity === originalData.quantity &&
-      unit === originalData.unit &&
-      expirationDate === originalData.expiration_date;
-
-    if (noChanges) {
-      setShowError(true);
-      setTimeout(() => setShowError(false), 2000);
-      return;
-    }
-
     const { error } = await supabase
       .from('ingredients')
       .update({
@@ -79,54 +68,60 @@ export default function EditIngredientPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-[#faa424] relative">
-      <button onClick={() => router.push('/home')} className="absolute top-4 left-4 bg-[#70994D] px-3 py-1 rounded text-white font-semibold shadow hover:bg-yellow-100">
+    <div className="min-h-screen bg-[#fccb82] p-8 relative">
+      <button 
+        onClick={() => router.push('/home')} 
+        className="absolute top-4 left-4 bg-[#70994D] px-3 py-1 rounded text-white font-semibold shadow hover:bg-[#5a7d3c]"
+      >
         ← Back
       </button>
 
-      <h1 className="text-2xl font-bold mb-6 text-center text-white">{decodeURIComponent(name as string)}</h1>
+      <h1 className="text-3xl font-bold text-white mb-8 text-center">{decodeURIComponent(name as string)}</h1>
 
       {showPopup && (
-        <div className="mb-4 text-center text-black bg-green-600 rounded p-2 font-semibold shadow">
+        <div className="mb-4 text-center text-white bg-[#70994D] rounded p-2 font-semibold shadow">
           Saved!
         </div>
       )}
 
-      {showError && (
-        <div className="mb-4 text-center text-white bg-red-600 rounded p-2 font-semibold shadow">
-          No changes made.
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-[#e77c10] p-6 rounded shadow space-y-4">
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-[#faa424] p-6 rounded-lg shadow-md space-y-4">
         <div>
-          <label className="block font-semibold text-white">Quantity</label>
-          <input type="text" value={quantity} onChange={(e) => setQuantity(e.target.value)}
-                 className="w-full p-2 border border-white rounded mt-1" />
+          <label className="block text-lg font-semibold text-white mb-2">Quantity</label>
+          <input 
+            type="text" 
+            value={quantity} 
+            onChange={(e) => setQuantity(e.target.value)}
+            className="w-full p-2 border border-[#fccb82] rounded-lg bg-[#fccb82] text-white placeholder-white/70 focus:ring-2 focus:ring-[#70994D] focus:border-transparent" 
+          />
         </div>
         <div>
-          <label className="block font-semibold text-white">Unit</label>
-          <input type="text" value={unit} onChange={(e) => setUnit(e.target.value)}
-                 className="w-full p-2 border border-white rounded mt-1" />
+          <label className="block text-lg font-semibold text-white mb-2">Unit</label>
+          <input 
+            type="text" 
+            value={unit} 
+            onChange={(e) => setUnit(e.target.value)}
+            className="w-full p-2 border border-[#fccb82] rounded-lg bg-[#fccb82] text-white placeholder-white/70 focus:ring-2 focus:ring-[#70994D] focus:border-transparent" 
+          />
         </div>
         <div>
-          <label className="block font-semibold text-white">Expiration Date</label>
-          <input type="date" value={expirationDate} onChange={(e) => setExpirationDate(e.target.value)}
-                 className="w-full p-2 border border-white rounded mt-1" />
+          <label className="block text-lg font-semibold text-white mb-2">Expiration Date</label>
+          <input 
+            type="date" 
+            value={expirationDate} 
+            onChange={(e) => setExpirationDate(e.target.value)}
+            className="w-full p-2 border border-[#fccb82] rounded-lg bg-[#fccb82] text-white focus:ring-2 focus:ring-[#70994D] focus:border-transparent" 
+          />
         </div>
-        <div className="flex justify-center space-x-4 pt-2">
+        <div className="flex flex-col items-center space-y-4 pt-4">
           <button
             type="submit"
-            className="w-32 bg-[#70994D] text-white px-4 py-2 rounded hover:bg-[#5a7d3c]"
+            className="w-32 bg-[#70994D] text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-[#5a7d3c] transition-colors"
           >
-            Save Changes
+            Save
           </button>
           <button
             type="button"
             onClick={async () => {
-              const confirmDelete = confirm('Are you sure you want to delete this ingredient?');
-              if (!confirmDelete) return;
-
               const { error } = await supabase
                 .from('ingredients')
                 .delete()
@@ -141,7 +136,7 @@ export default function EditIngredientPage() {
 
               router.push('/home');
             }}
-            className="w-32 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            className="w-32 bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-red-700 transition-colors"
           >
             Delete
           </button>

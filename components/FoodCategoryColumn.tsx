@@ -39,13 +39,13 @@ export default function FoodCategoryColumn({ category, ingredients }: Props) {
   }, [ingredients]);
 
   return (
-    <div className="w-full  h-134 border border-amber-500 rounded-lg shadow-md p-4 bg-[#faa422] flex flex-col">
-      <h2 className="text-xl font-bold mb-3 text-center capitalize text-[#70994D]">
+    <div className="w-full h-134 border border-amber-500 rounded-lg shadow-md p-4 bg-[#faa424ff] flex flex-col">
+      <h2 className="text-2xl font-bold mb-3 text-center capitalize text-white">
         {category}
       </h2>
 
       {showScrollArrow && (
-        <div className="text-center text-xs text-gray-800 animate-pulse mb-1">
+        <div className="text-center text-sm text-white animate-pulse mb-1">
           ↑ scroll ↑
         </div>
       )}

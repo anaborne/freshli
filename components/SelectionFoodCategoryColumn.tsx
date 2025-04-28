@@ -6,7 +6,7 @@ type Props = {
   category: string;
   ingredients: Ingredient[];
   selectedIngredients: Ingredient[];
-  toggleSelect: (ingredient: Ingredient) => void;
+  toggleSelect: (ingredient: Ingredient, quantity?: number) => void;
 };
 
 export default function SelectionFoodCategoryColumn({ category, ingredients, selectedIngredients, toggleSelect }: Props) {
@@ -41,13 +41,13 @@ export default function SelectionFoodCategoryColumn({ category, ingredients, sel
   }, [ingredients]);
 
   return (
-    <div className="w-full h-134 border border-amber-500 rounded-lg shadow-md p-4 bg-[#faa424] flex flex-col">
-      <h2 className="text-xl font-bold mb-3 text-center capitalize text-[#70994D]">
+    <div className="w-full h-134 border border-amber-500 rounded-lg shadow-md p-4 bg-[#faa424ff] flex flex-col">
+      <h2 className="text-2xl font-bold mb-3 text-center capitalize text-white">
         {category}
       </h2>
 
       {showScrollArrow && (
-        <div className="text-center text-xs text-gray-800 animate-pulse mb-1">
+        <div className="text-center text-sm text-white animate-pulse mb-1">
           ↑ scroll ↑
         </div>
       )}

@@ -1,108 +1,118 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function FilterPage() {
+export default function RecipeFiltersPage() {
   const [input, setInput] = useState('');
   const [filters, setFilters] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const stored = localStorage.getItem('selectedIngredients');
-    console.log('🧾 Loaded selectedIngredients in filters page:', stored);
-
-    if (!stored || JSON.parse(stored).length === 0) {
-        alert('No ingredients selected! Please go back and select some ingredients.');
-    }
-  }, []);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && input.trim()) {
-      e.preventDefault();
-      if (!filters.includes(input.trim())) {
-        setFilters([...filters, input.trim()]);
-      }
+  const handleAddFilter = () => {
+    if (input.trim() && !filters.includes(input.trim())) {
+      setFilters([...filters, input.trim()]);
       setInput('');
     }
   };
 
-  const removeFilter = (filter: string) => {
-    setFilters(filters.filter(f => f !== filter));
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAddFilter();
+    }
+  };
+
+  const handleRemoveFilter = (filterToRemove: string) => {
+    setFilters(filters.filter(f => f !== filterToRemove));
+  };
+
+  const handleGenerateRecipes = async () => {
+    setLoading(true);
+    const selected = JSON.parse(localStorage.getItem('selectedIngredients') || '[]');
+    const res = await fetch('/api/generate-recipes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ingredients: selected, filters }),
+    });
+
+    const data = await res.json();
+    if (data.error) {
+      console.error('Error generating recipes:', data.error);
+      return;
+    }
+    localStorage.setItem('generatedRecipes', JSON.stringify(data.recipes || []));
+    router.push('/recipes/results');
   };
 
   return (
-    <div className="min-h-screen bg-[#fccb82] px-6 py-8">
-      <h1 className="text-3xl font-bold text-center mb-6 text-[#70994D]">Add Recipe Filters</h1>
-
-      <div className="max-w-xl mx-auto">
-        <button
-          onClick={() => router.push('/recipes')}
-          className="mb-4 bg-[#70994D] hover:bg-[#5a7d3c] px-4 py-1 rounded shadow text-white font-semibold"
-        >
-          ← Back
-        </button>
-
-        <label htmlFor="filterInput" className="block text-lg font-semibold text-[#70994D] mb-2">
-          Type and press Enter to add a filter
-        </label>
-        <input
-          id="filterInput"
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="w-full p-3 rounded-lg border border-[#70994D] shadow-sm text-amber-800 mb-4"
-          placeholder="e.g. vegetarian, soup, high protein"
-        />
-
-        <div className="flex flex-wrap gap-2 mb-6">
-          {filters.map((filter) => (
-            <span key={filter} className="bg-[#70994D] text-white px-3 py-1 rounded-full flex items-center space-x-2">
-              <span>{filter}</span>
-              <button
-                onClick={() => removeFilter(filter)}
-                className="ml-2 text-white font-bold hover:text-red-300"
-                aria-label={`Remove filter ${filter}`}
-              >
-                &times;
-              </button>
-            </span>
-          ))}
+    <div className="min-h-screen bg-[#fccb82]">
+      <div className="max-w-4xl mx-auto px-4 pt-4 pb-8">
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => router.back()}
+            className="bg-[#70994D] hover:bg-[#5a7d3c] text-white px-3 py-1 rounded shadow font-semibold"
+          >
+            ← Back
+          </button>
         </div>
 
-        <button
-          onClick={async () => {
-            setLoading(true);
-            const selected = JSON.parse(localStorage.getItem('selectedIngredients') || '[]');
-            const res = await fetch('/api/generate-recipes', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ ingredients: selected, filters }),
-            });
+        <h1 className="text-3xl font-bold text-white text-center mb-6">Recipe Filters</h1>
 
-            const data = await res.json();
-            localStorage.setItem('generatedRecipes', JSON.stringify(data.recipes || []));
-            router.push('/recipes/results');
-          }}
-          disabled={loading}
-          className="bg-[#70994D] hover:bg-[#5a7d3c] text-white font-semibold px-6 py-2 rounded shadow w-full"
-        >
-          {loading ? 'Generating...' : 'Submit'}
-        </button>
-
-        {loading && (
-          <div className="mt-6 flex flex-col items-center text-gray-800 text-lg font-semibold animate-pulse">
-            <svg className="animate-spin h-6 w-6 mb-2 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-            <span>Loading<span className="animate-ping">...</span></span>
+        <div className="space-y-6">
+          <div className="bg-[#faa424ff] rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Add Filters</h2>
+            <div className="flex gap-4">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="e.g., vegetarian, gluten-free, quick"
+                className="flex-1 p-2 border border-[#fccb82] rounded bg-[#fccb82] text-white placeholder-white/70"
+              />
+              <button
+                onClick={handleAddFilter}
+                className="bg-[#70994D] text-white px-4 py-2 rounded font-semibold hover:bg-[#5a7d3c]"
+              >
+                Add
+              </button>
+            </div>
           </div>
-        )}
+
+          {filters.length > 0 && (
+            <div className="bg-[#faa424ff] rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">Active Filters</h2>
+              <div className="flex flex-wrap gap-2">
+                {filters.map((filter, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#fccb82] text-white px-3 py-1 rounded-full flex items-center"
+                  >
+                    <span>{filter}</span>
+                    <button
+                      onClick={() => handleRemoveFilter(filter)}
+                      className="ml-2 text-white hover:text-red-500"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-center">
+            <button
+              onClick={handleGenerateRecipes}
+              disabled={loading}
+              className="bg-[#70994D] text-white py-2 px-6 rounded-lg font-semibold hover:bg-[#5a7d3c] transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Generating...' : 'Generate Recipes'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

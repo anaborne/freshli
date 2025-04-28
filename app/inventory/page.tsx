@@ -148,20 +148,24 @@ export default function InventoryPage() {
 
     return (
       <div className="min-h-screen p-8 bg-[#fccb82] relative">
-        <button
-          onClick={() => window.history.back()}
-          className="absolute top-4 left-4 bg-[#70994D] px-3 py-1 rounded text-white font-semibold shadow hover:bg-[#5a7d3c]"
-        >
-          ← Back
-        </button>
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center mb-4">
+            <button
+              onClick={() => window.history.back()}
+              className="bg-[#70994D] px-3 py-1 rounded text-white font-semibold shadow hover:bg-[#5a7d3c]"
+            >
+              ← Back
+            </button>
+          </div>
 
-        <h1 className="text-2xl font-bold mb-6 text-center text-[#70994D]">
-          {isManualUpload ? "Manual Upload" : "Image Upload"}
-        </h1>
+          <h1 className="text-3xl font-bold mb-6 text-center text-white">
+            {isManualUpload ? "Manual Upload" : "Image Upload"}
+          </h1>
+        </div>
 
         <button
           onClick={toggleUploadMode}
-          className="block mx-auto mb-6 bg-[#70994D]  text-white px-4 py-2 rounded font-semibold shadow hover:bg-[#5a7d3c]"
+          className="block mx-auto mb-6 bg-[#70994D] text-white px-4 py-2 rounded font-semibold shadow hover:bg-[#5a7d3c]"
         >
           {isManualUpload ? "Switch to Image Upload" : "Switch to Manual Upload"}
         </button>
@@ -169,54 +173,54 @@ export default function InventoryPage() {
         {isManualUpload ? (
           <form
             onSubmit={handleManualSubmit}
-            className="max-w-md mx-auto bg-[#faa424] p-6 rounded shadow space-y-4"
+            className="max-w-md mx-auto bg-[#faa424ff] p-6 rounded shadow space-y-4"
           >
             {saved && (
-              <div className="text-center text-[#70994D] bg-green-600 rounded p-2 font-semibold shadow">
+              <div className="text-center text-white bg-[#70994D] rounded p-2 font-semibold shadow">
                 Saved!
               </div>
             )}
 
             <div>
-              <label className="block font-semibold text-[#70994D]">Name</label>
+              <label className="block font-semibold text-white">Name</label>
               <input
-                className="w-full p-2 border border-[#70994D] rounded mt-1"
+                className="w-full p-2 border border-[#fccb82] rounded mt-1 bg-[#fccb82] text-white placeholder-white/70"
                 placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div>
-              <label className="block font-semibold text-[#70994D]">Quantity</label>
+              <label className="block font-semibold text-white">Quantity</label>
               <input
-                className="w-full p-2 border border-[#70994D] rounded mt-1"
+                className="w-full p-2 border border-[#fccb82] rounded mt-1 bg-[#fccb82] text-white placeholder-white/70"
                 placeholder="Quantity"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
             </div>
             <div>
-              <label className="block font-semibold text-[#70994D]">Unit</label>
+              <label className="block font-semibold text-white">Unit</label>
               <input
-                className="w-full p-2 border border-[#70994D] rounded mt-1"
+                className="w-full p-2 border border-[#fccb82] rounded mt-1 bg-[#fccb82] text-white placeholder-white/70"
                 placeholder="Unit"
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
               />
             </div>
             <div>
-              <label className="block font-semibold text-[#70994D]">Expiration Date</label>
+              <label className="block font-semibold text-white">Expiration Date</label>
               <input
-                className="w-full p-2 border border-[#70994D] rounded mt-1"
+                className="w-full p-2 border border-[#fccb82] rounded mt-1 bg-[#fccb82] text-white"
                 type="date"
                 value={expirationDate}
                 onChange={(e) => setExpirationDate(e.target.value)}
               />
             </div>
             <div>
-              <label className="block font-semibold text-[#70994D]">Category</label>
+              <label className="block font-semibold text-white">Category</label>
               <select
-                className="w-full p-2 border border-[#70994D] rounded mt-1"
+                className="w-full p-2 border border-[#fccb82] rounded mt-1 bg-[#fccb82] text-white"
                 value={category}
                 onChange={(e) => setCategory(e.target.value.toLowerCase())}
               >
@@ -240,7 +244,7 @@ export default function InventoryPage() {
             </button>
           </form>
         ) : (
-          <div className="max-w-md mx-auto bg-[#faa424] p-6 rounded shadow text-[#70994D] space-y-4">
+          <div className="max-w-md mx-auto bg-[#faa424ff] p-6 rounded shadow text-white space-y-4">
             <input
               ref={fileInputRef}
               type="file"
@@ -260,7 +264,7 @@ export default function InventoryPage() {
                 <img
                   src={`data:image/jpeg;base64,${uploadedImage}`}
                   alt="Preview"
-                  className="w-full max-h-64 object-contain rounded border border-[#faa424] shadow"
+                  className="w-full max-h-64 object-contain rounded border border-[#fccb82] shadow"
                 />
                 <button
                   type="button"
@@ -272,13 +276,13 @@ export default function InventoryPage() {
               </div>
             )}
             {showToast && (
-              <div className="text-center text-[#70994D] bg-[#70994D] rounded p-2 font-semibold shadow">
+              <div className="text-center text-white bg-[#70994D] rounded p-2 font-semibold shadow">
                 ✅ Ingredients added!
               </div>
             )}
             {loading && (
               <div className="flex justify-center mt-4">
-                <div className="w-8 h-8 border-4 border-[#70994D] border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
             {recognized.length > 0 && (
@@ -290,43 +294,40 @@ export default function InventoryPage() {
                   return (
                     <div
                       key={i}
-                      className={`p-3  rounded border shadow-sm space-y-2 ${
-                        isItemComplete ? 'border-green-700 border-3 bg-[#fccb82]' : 'border-red-600 border-3 bg-[#fccb82]'
+                      className={`p-3 rounded border shadow-sm space-y-2 ${
+                        isItemComplete ? 'border-[#fccb82] border-3 bg-[#fccb82]' : 'border-red-600 border-3 bg-[#fccb82]'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <input
-                          className="flex-1 border rounded p-1 mr-2"
+                          className="flex-1 border rounded p-1 mr-2 bg-[#fccb82] text-white placeholder-white/70"
                           value={item.name}
                           onChange={(e) =>
                             updateIngredient(i, { ...item, name: e.target.value })
                           }
                           placeholder="Name"
                         />
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col gap-2">
                           <button
                             onClick={() => deleteIngredient(i)}
-                            className="text-red-500 text-xl font-bold"
+                            className="text-white text-xl font-bold"
                             title="Delete"
                           >
                             ❌
                           </button>
                           <button
-                            onClick={() =>
-                              setExpandedIndex(isExpanded ? null : i)
-                            }
-                            className="text-[#70994D] font-bold"
+                            onClick={() => setExpandedIndex(isExpanded ? null : i)}
+                            className="text-white font-bold"
                             title="Toggle Details"
                           >
                             {isExpanded ? '▲' : '▼'}
                           </button>
                         </div>
                       </div>
-
                       {isExpanded && (
-                        <div className="space-y-2 mt-2">
+                        <div className="space-y-2">
                           <input
-                            className="w-full border rounded p-1"
+                            className="w-full border rounded p-1 bg-[#fccb82] text-white placeholder-white/70"
                             value={item.quantity || ''}
                             onChange={(e) =>
                               updateIngredient(i, { ...item, quantity: e.target.value })
@@ -334,7 +335,7 @@ export default function InventoryPage() {
                             placeholder="Quantity"
                           />
                           <input
-                            className="w-full border rounded p-1"
+                            className="w-full border rounded p-1 bg-[#fccb82] text-white placeholder-white/70"
                             value={item.unit || ''}
                             onChange={(e) =>
                               updateIngredient(i, { ...item, unit: e.target.value })
@@ -342,7 +343,7 @@ export default function InventoryPage() {
                             placeholder="Unit"
                           />
                           <input
-                            className="w-full border rounded p-1"
+                            className="w-full border rounded p-1 bg-[#fccb82] text-white"
                             type="date"
                             value={item.expirationDate || ''}
                             onChange={(e) =>
@@ -350,7 +351,7 @@ export default function InventoryPage() {
                             }
                           />
                           <select
-                            className="w-full border rounded p-1"
+                            className="w-full border rounded p-1 bg-[#fccb82] text-white"
                             value={item.category || ''}
                             onChange={(e) =>
                               updateIngredient(i, { ...item, category: e.target.value.toLowerCase() })
@@ -364,12 +365,14 @@ export default function InventoryPage() {
                             <option value="frozen">Frozen</option>
                             <option value="miscellaneous">Miscellaneous</option>
                           </select>
-                          <button
-                            onClick={() => setExpandedIndex(null)}
-                            className="w-full bg-[#70994D] text-white py-1 px-2 rounded font-semibold hover:bg-[#5a7d3c]"
-                          >
-                            Save & Collapse
-                          </button>
+                          <div className="flex flex-col gap-2">
+                            <button
+                              onClick={() => setExpandedIndex(null)}
+                              className="w-full bg-[#70994D] text-white py-1 px-2 rounded font-semibold hover:bg-[#5a7d3c]"
+                            >
+                              Save
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -377,12 +380,12 @@ export default function InventoryPage() {
                 })}
                 <button
                   onClick={() => {
-                  const newIndex = recognized.length;
-                  setRecognized([
-                    ...recognized,
-                    { name: '', quantity: '', unit: '', expirationDate: '', category: '' }
-                  ]);
-                  setExpandedIndex(newIndex);
+                    const newIndex = recognized.length;
+                    setRecognized([
+                      ...recognized,
+                      { name: '', quantity: '', unit: '', expirationDate: '', category: '' }
+                    ]);
+                    setExpandedIndex(newIndex);
                   }}
                   className="w-full px-4 py-2 rounded font-semibold bg-[#70994D] text-white hover:bg-[#5a7d3c]"
                 >
