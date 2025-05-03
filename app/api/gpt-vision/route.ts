@@ -5,14 +5,7 @@ export async function POST(req: Request) {
   console.log("🔍 Received base64Image (first 100 chars):", base64Image?.slice(0, 100));
 
   try {
-    // For testing purposes, return a mock response with some common ingredients
-    // This will allow the UI to work while we fix the API access issue
-    const mockIngredients = ["Tomatoes", "Onions", "Garlic", "Bell Peppers", "Olive Oil"];
     
-    return NextResponse.json({ ingredients: mockIngredients });
-    
-    // The actual API call is commented out until we can fix the model access
-    /*
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -21,7 +14,7 @@ export async function POST(req: Request) {
         'OpenAI-Beta': 'assistants=v1'
       },
       body: JSON.stringify({
-        model: 'gpt-4-vision',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',
@@ -63,7 +56,6 @@ export async function POST(req: Request) {
       console.error("❌ JSON Parse Error:", e);
       return NextResponse.json({ error: 'Could not parse response', raw: text }, { status: 500 });
     }
-    */
   } catch (error) {
     console.error("❌ General Error:", error);
     return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
