@@ -210,10 +210,38 @@ export default function RecipeResultsPage() {
                 <ol className="space-y-3 pl-5">
                   {selectedRecipe.instructions.map((instruction, index) => (
                     <li key={index} className="text-white">
-                      <span className="ml-2">{instruction}</span>
+                      {instruction}
                     </li>
                   ))}
                 </ol>
+              </div>
+
+              <div className="flex justify-center mt-8">
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/update-inventory', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ ingredients: selectedRecipe.ingredients }),
+                      });
+
+                      if (!response.ok) {
+                        throw new Error('Failed to update inventory');
+                      }
+
+                      // Navigate to home page
+                      router.push('/home');
+                    } catch (error) {
+                      console.error('Error updating inventory:', error);
+                    }
+                  }}
+                  className="bg-[#70994D] hover:bg-[#5a7d3c] text-white px-6 py-3 rounded-lg font-semibold"
+                >
+                  Cooked This Recipe
+                </button>
               </div>
             </div>
           </div>

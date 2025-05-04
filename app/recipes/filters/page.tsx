@@ -51,7 +51,7 @@ export default function RecipeFiltersPage() {
       <div className="max-w-4xl mx-auto px-4 pt-4 pb-8">
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push('/recipes')}
             className="bg-[#70994D] hover:bg-[#5a7d3c] text-white px-3 py-1 rounded shadow font-semibold"
           >
             ← Back

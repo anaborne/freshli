@@ -25,8 +25,33 @@ export default function HomePage() {
       const existingIndex = prev.findIndex(item => item.name === ingredient.name);
       
       if (existingIndex >= 0) {
-        // If ingredient is already selected, remove it
-        return prev.filter((item) => item.name !== ingredient.name);
+        // If ingredient is already selected, update its quantity if provided
+        if (quantity !== undefined) {
+          const updatedIngredients = [...prev];
+          updatedIngredients[existingIndex] = {
+            ...updatedIngredients[existingIndex],
+            quantity
+          };
+          return updatedIngredients;
+        }
+        // If no quantity provided (checkbox unclicked), remove the ingredient
+        // and restore its original quantity
+        const updatedIngredients = prev.filter((item) => item.name !== ingredient.name);
+        // Find the original ingredient in finalData
+        const originalIngredient = Object.values(finalData)
+          .flat()
+          .find(item => item.name === ingredient.name);
+        if (originalIngredient) {
+          // Update the ingredient in finalData with its original quantity
+          const updatedFinalData = { ...finalData };
+          Object.keys(updatedFinalData).forEach(category => {
+            updatedFinalData[category] = updatedFinalData[category].map(item => 
+              item.name === ingredient.name ? originalIngredient : item
+            );
+          });
+          setFinalData(updatedFinalData);
+        }
+        return updatedIngredients;
       } else {
         // If ingredient is not selected, add it with the specified quantity
         const newIngredient = { ...ingredient };
