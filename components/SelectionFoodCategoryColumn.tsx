@@ -53,14 +53,16 @@ export default function SelectionFoodCategoryColumn({ category, ingredients, sel
       )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3">
-        {ingredients.map((ingredient, idx) => (
-          <SelectionIngredientCard
-            key={idx}
-            ingredient={ingredient}
-            isSelected={selectedIngredients.some(item => item.name === ingredient.name)}
-            toggleSelect={toggleSelect}
-          />
-        ))}
+        {ingredients
+          .filter((ingredient) => parseFloat(String(ingredient.quantity)) > 0)
+          .map((ingredient, idx) => (
+            <SelectionIngredientCard
+              key={idx}
+              ingredient={ingredient}
+              isSelected={selectedIngredients.some(item => item.name === ingredient.name)}
+              toggleSelect={toggleSelect}
+            />
+          ))}
       </div>
     </div>
   );

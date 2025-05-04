@@ -51,15 +51,17 @@ export default function FoodCategoryColumn({ category, ingredients }: Props) {
       )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3">
-        {ingredients.map((ingredient, idx) => (
-          <IngredientCard
-            key={idx}
-            name={ingredient.name}
-            quantity={ingredient.quantity}
-            unit={ingredient.unit}
-            expirationDate={ingredient.expirationDate}
-          />
-        ))}
+        {ingredients
+          .filter((ingredient) => parseFloat(String(ingredient.quantity)) > 0)
+          .map((ingredient, idx) => (
+            <IngredientCard
+              key={idx}
+              name={ingredient.name}
+              quantity={ingredient.quantity}
+              unit={ingredient.unit}
+              expirationDate={ingredient.expirationDate}
+            />
+          ))}
       </div>
     </div>
   );

@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate each recipe has required fields
-    const validRecipes = response.recipes.filter(recipe => 
+    const validRecipes = response.recipes.filter((recipe: Recipe) => 
       recipe.name && 
       Array.isArray(recipe.ingredients) && 
       Array.isArray(recipe.instructions) &&
