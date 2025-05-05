@@ -1,4 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🥬 Freshli — Your Smart Fridge Companion
+
+Freshli is a sleek, full-stack web app designed to help users effortlessly track food inventory, reduce waste, and generate AI-assisted recipes using real ingredients in their fridge or pantry.
+
+Built as a personal side project, Freshli showcases modern React development using **Next.js**, **Tailwind CSS**, **Supabase**, and the **OpenAI GPT-4 Vision** and **Chat Completion APIs** to deliver a fluid and intuitive UX for meal planning and food management.
+
+---
+
+## 🔑 Key Features
+
+### 🧊 Fridge Inventory Dashboard
+- Organized columns by category (produce, meats, dairy, pantry/grains, frozen, miscellaneous).
+- Ingredients sorted by expiration date, highlighted with intuitive border color cues (green, yellow, red).
+- Scrollable lists per category to keep the layout clean and mobile-friendly.
+
+### 📸 AI-Powered Image Recognition
+- Upload a photo of your groceries and Freshli uses OpenAI GPT-4 Vision to identify ingredients.
+- Auto-populates cards with editable ingredient names.
+- Users manually add quantity, unit, and expiration data before confirming additions to the inventory.
+
+### ✅ Interactive Ingredient Management
+- Clickable ingredient cards for easy editing or deletion.
+- Manual ingredient input form with duplication handling: auto-merges quantities for duplicate items (same name/unit/expiration).
+
+### 🧠 AI-Assisted Recipe Generation
+- Users select ingredients via checkboxes and submit optional and fully customizable filters (e.g., "soup", "vegetarian", "Korean").
+- OpenAI generates up to 9 recipes based on selected ingredients and preferences.
+- Each recipe links to a detail view with ingredients, quantities, and step-by-step instructions.
+- After cooking, users can update inventory by entering quantities used for each ingredient.
+
+### 💬 Smart UX Design
+- Animated loading states and feedback popups
+- Ingredient selection persists via `localStorage` between pages.
+- Clean, responsive design with Tailwind and custom color palette.
+- All pages use consistent visual language (pill buttons, component cards, spacing).
+
+---
+
+## 🛠️ Tech Stack
+
+| Tech | Description |
+|------|-------------|
+| **Next.js** | React framework for routing, SSR, and API routes |
+| **Tailwind CSS** | Utility-first CSS for styling and responsiveness |
+| **Supabase** | Open source backend-as-a-service (PostgreSQL + Auth + Storage) |
+| **OpenAI GPT-4 Vision** | Recognizes ingredients from uploaded images |
+| **OpenAI GPT-4 Completion** | AI-powered recipe generation |
+| **TypeScript** | Type-safe code across all components and backend logic |
+| **LocalStorage** | Persists ingredient selections and user state across pages |
+
+---
 
 ## Getting Started
 
@@ -6,31 +56,6 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+And open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
