@@ -282,7 +282,7 @@ export default function InventoryPage() {
             )}
             {loading && (
               <div className="flex justify-center mt-4">
-                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-[#70994D] border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
             {recognized.length > 0 && (

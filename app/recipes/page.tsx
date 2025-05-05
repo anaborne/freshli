@@ -18,6 +18,7 @@ export default function HomePage() {
 
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
   const [showOverlay, setShowOverlay] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   const toggleSelect = (ingredient: Ingredient, quantity?: number) => {
     setSelectedIngredients((prev) => {
@@ -133,6 +134,11 @@ export default function HomePage() {
 
             <button
               onClick={() => {
+                if (selectedIngredients.length === 0) {
+                  setShowError(true);
+                  setTimeout(() => setShowError(false), 2000);
+                  return;
+                }
                 const selected = JSON.stringify(selectedIngredients);
                 localStorage.setItem('selectedIngredients', selected);
                 window.location.href = '/recipes/filters';
@@ -146,6 +152,11 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold text-white text-center">
             Select Ingredients
           </h1>
+          {showError && (
+            <div className="mt-4 bg-red-500 text-white text-center py-2 px-4 rounded shadow">
+              Please select at least one ingredient before proceeding.
+            </div>
+          )}
         </div>
       </div>
 
