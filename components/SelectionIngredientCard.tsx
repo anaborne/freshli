@@ -95,6 +95,7 @@ export default function SelectionIngredientCard({ ingredient, isSelected, toggle
 
   return (
     <div
+      onClick={handleToggleSelect}
       className={`flex justify-between items-start bg-[#fccb82] shadow-lg rounded-lg p-4 h-auto min-h-24 cursor-pointer border-4 ${borderColor}`}
       title={title}
     >
@@ -103,7 +104,6 @@ export default function SelectionIngredientCard({ ingredient, isSelected, toggle
           type="checkbox"
           checked={isSelected}
           onChange={() => {}}
-          onClick={handleToggleSelect}
           className="form-checkbox mt-1 accent-[#70994D]"
         />
         <div>
