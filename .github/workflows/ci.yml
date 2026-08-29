@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
+  # The date logic is timezone-sensitive by nature, and the defect it replaced
+  # only reproduced west of UTC. Running the suite under four zones keeps that
+  # class of bug from coming back through a green CI run in UTC.
+  timezones:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tz: [UTC, America/New_York, Asia/Tokyo, Pacific/Kiritimati]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+        env:
+          TZ: ${{ matrix.tz }}
