@@ -12,7 +12,7 @@ of groceries, GPT-3.5 Turbo for recipes, DALL-E 2 for recipe illustrations.
 npm install
 cp .env.example .env.local     # fill in the three values
 npm run dev                    # http://localhost:3000
-npm test                       # 33 unit tests, no network, no database
+npm test                       # 40 unit tests, no network, no database
 ```
 
 ## What it does
@@ -38,7 +38,8 @@ Pick ingredients, optionally add free-text filters ("soup", "vegetarian",
 "Korean"), and the model is asked for nine recipes that may use up to the
 quantities you have and may add only salt, pepper, oil and basic seasonings.
 Malformed recipes are dropped, so fewer than nine can come back. After cooking,
-the quantities used are deducted from the inventory.
+the quantities used are deducted from the inventory, and any line that matched no
+stored row is listed back on the page instead of passing as a deduction.
 
 ## Worth reading
 
@@ -74,7 +75,8 @@ fourth was a build-config mistake that the pure-function suite cannot reach.
    `next.config.js` sat next to it. Next 15 resolves `next.config.js` before
    `next.config.ts` and ignores the `.ts` when both exist, so the allowlist was
    inactive and `app/recipes/results` threw on every generated image. The `.js`
-   file is gone.
+   file was removed before this repository's first commit; only `next.config.ts`
+   is tracked.
 
 A fifth defect was less visible. A failed Supabase lookup returned `null` data
 and the insert path treated that as "no such row", so a transient error
@@ -83,18 +85,18 @@ created a duplicate row. The error is now checked before the branch.
 ## Tests
 
 ```bash
-npm test          # vitest, 33 tests
+npm test          # vitest, 40 tests
 npm run typecheck # tsc --noEmit
 npm run lint      # next lint
 npm run build     # needs the three .env.local values; the OpenAI client is constructed at module load
 ```
 
 The tests are pure functions only: no network, no database, no OpenAI key, no
-component rendering. They run in well under a second. CI runs typecheck, lint
-and tests on pushes to main and on every pull request, and runs the test suite
-again under UTC, America/New_York, Asia/Tokyo and Pacific/Kiritimati, because
-the logic they cover is timezone-sensitive and the defect they replaced only
-reproduced west of UTC.
+component rendering. The assertions themselves run in tens of milliseconds. CI
+runs typecheck, lint and tests on pushes to main and on every pull request, and
+runs the test suite again under UTC, America/New_York, Asia/Tokyo and
+Pacific/Kiritimati, because the logic they cover is timezone-sensitive and the
+defect they replaced only reproduced west of UTC.
 
 The React components, the Supabase round trips and the three OpenAI calls are
 not covered by the suite, and exercising them needs a live project and live

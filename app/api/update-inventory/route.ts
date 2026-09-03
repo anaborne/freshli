@@ -76,9 +76,10 @@ export async function POST(request: Request) {
       applied.push(line);
     }
 
-    // Reported rather than logged and dropped: a caller that sends five lines
-    // and has two silently ignored should be able to see which two.
-    return NextResponse.json({ success: true, applied, skipped });
+    // Reported instead of logged and dropped: a caller that sends five lines
+    // and has two silently ignored should be able to see which two. A request where
+    // every line was skipped deducted nothing, so it does not report success.
+    return NextResponse.json({ success: applied.length > 0, applied, skipped });
   } catch (error) {
     console.error('Error updating inventory:', error);
     return NextResponse.json(

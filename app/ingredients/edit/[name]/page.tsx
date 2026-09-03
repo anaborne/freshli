@@ -12,7 +12,12 @@ export default function EditIngredientPage() {
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
-  const [originalData, setOriginalData] = useState({ quantity: '', unit: '', expiration_date: '' });
+  const [originalData, setOriginalData] = useState<{
+    id: number | string | null;
+    quantity: string;
+    unit: string;
+    expiration_date: string;
+  }>({ id: null, quantity: '', unit: '', expiration_date: '' });
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -33,6 +38,7 @@ export default function EditIngredientPage() {
       setUnit(data.unit || '');
       setExpirationDate(data.expiration_date || '');
       setOriginalData({
+        id: data.id,
         quantity: data.quantity || '',
         unit: data.unit || '',
         expiration_date: data.expiration_date || '',
@@ -45,9 +51,16 @@ export default function EditIngredientPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // The same food can sit in the table twice under two expirations, so the row is
-    // identified the way the fetch above and the delete below identify it: name, unit
-    // and expiration together. Filtering on the name alone rewrote every batch.
+    // The same food can sit in the table twice under two expirations, so the write goes
+    // to the primary key of the row the fetch above returned. Filtering on the name
+    // alone rewrote every batch, and name with unit and expiration still caught a group
+    // whenever two rows shared a blank unit or a blank date, which the upload path can
+    // write.
+    if (originalData.id === null) {
+      console.error('Failed to update ingredient: no row was loaded');
+      return;
+    }
+
     const { error } = await supabase
       .from('ingredients')
       .update({
@@ -55,9 +68,7 @@ export default function EditIngredientPage() {
         unit,
         expiration_date: expirationDate,
       })
-      .eq('name', decodeURIComponent(name as string))
-      .eq('unit', originalData.unit)
-      .eq('expiration_date', originalData.expiration_date);
+      .eq('id', originalData.id);
 
     if (error) {
       console.error('Failed to update ingredient:', error.message);

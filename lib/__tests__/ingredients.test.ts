@@ -136,6 +136,67 @@ describe("planDeduction", () => {
       deductions: [{ index: 1, remaining: 0 }],
     });
   });
+
+  it("covers a line the batches sum to only within float error", () => {
+    // 0.7 + 0.1 is 0.7999999999999999, which read as a shortage against 0.8.
+    expect(planDeduction([batch("0.7", "2026-09-02"), batch("0.1", "2026-09-20")], 0.8)).toEqual({
+      ok: true,
+      deductions: [
+        { index: 0, remaining: 0 },
+        { index: 1, remaining: 0 },
+      ],
+    });
+  });
+
+  it("reports a real shortage with a readable number", () => {
+    expect(planDeduction([batch("0.1", "2026-09-02"), batch("0.2", "2026-09-20")], 0.5)).toEqual({
+      ok: false,
+      reason: "needs 0.5, inventory has 0.3",
+    });
+  });
+
+  it("leaves no float residue in a batch it empties", () => {
+    // The second batch held 2.7755575615628914e-17, and the route wrote that string.
+    expect(planDeduction([batch("0.1", "2026-09-02"), batch("0.2", "2026-09-20")], 0.3)).toEqual({
+      ok: true,
+      deductions: [
+        { index: 0, remaining: 0 },
+        { index: 1, remaining: 0 },
+      ],
+    });
+  });
+
+  it("spends the readable batches when a sibling quantity is blank", () => {
+    // The upload path inserts `quantity: item.quantity || ''`, so a blank row is
+    // reachable, and it used to block every other batch of that food.
+    expect(planDeduction([batch("", "2026-09-02"), batch("10", "2026-09-20")], 1)).toEqual({
+      ok: true,
+      deductions: [{ index: 1, remaining: 9 }],
+    });
+  });
+
+  it("refuses only when no batch is readable", () => {
+    expect(planDeduction([batch("", "2026-09-02"), batch("about two", "2026-09-20")], 1)).toEqual({
+      ok: false,
+      reason: "inventory quantity is not a number",
+    });
+  });
+
+  it("leaves an empty batch out of the plan", () => {
+    // Writing that row back is an update setting "0" to "0".
+    expect(planDeduction([batch("0", "2026-09-02"), batch("5", "2026-09-20")], 2)).toEqual({
+      ok: true,
+      deductions: [{ index: 1, remaining: 3 }],
+    });
+  });
+
+  it("does not raise a negative batch to zero out of a healthy one", () => {
+    // -5 and 10 against a line needing 3 used to take 8 from the 10 row.
+    expect(planDeduction([batch("-5", "2026-09-02"), batch("10", "2026-09-20")], 3)).toEqual({
+      ok: true,
+      deductions: [{ index: 1, remaining: 7 }],
+    });
+  });
 });
 
 describe("sortByExpiry", () => {

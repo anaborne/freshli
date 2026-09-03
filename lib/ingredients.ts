@@ -120,22 +120,30 @@ export type DeductionPlan =
  * built before any row is written, so a line the fridge cannot cover deducts nothing.
  */
 export function planDeduction(batches: StockBatch[], needed: number): DeductionPlan {
-  const held = batches.map((batch, index) => ({
-    index,
-    quantity:
-      typeof batch.quantity === "number"
-        ? batch.quantity
-        : Number.parseFloat(String(batch.quantity)),
-    expiry: parseLocalDate(batch.expirationDate ?? "").getTime(),
-  }));
+  const held = batches
+    .map((batch, index) => ({
+      index,
+      quantity:
+        typeof batch.quantity === "number"
+          ? batch.quantity
+          : Number.parseFloat(String(batch.quantity)),
+      expiry: parseLocalDate(batch.expirationDate ?? "").getTime(),
+    }))
+    // A blank quantity is a row the upload path can write, and a negative one cannot be
+    // taken from without raising the row. Both are dropped, so an unusable batch blocks
+    // only itself and its siblings can still be spent.
+    .filter((batch) => Number.isFinite(batch.quantity) && batch.quantity >= 0);
 
-  if (held.some((batch) => !Number.isFinite(batch.quantity))) {
+  if (held.length === 0 && batches.length > 0) {
     return { ok: false, reason: "inventory quantity is not a number" };
   }
 
   const total = held.reduce((sum, batch) => sum + batch.quantity, 0);
-  if (total < needed) {
-    return { ok: false, reason: `needs ${needed}, inventory has ${total}` };
+  // Decimal quantities sum a hair under the line they cover: 0.7 and 0.1 come to
+  // 0.7999999999999999 against a line needing 0.8. The tolerance keeps that from
+  // reading as a shortage, and the reason carries a number a person can act on.
+  if (total < needed - 1e-9) {
+    return { ok: false, reason: `needs ${needed}, inventory has ${Number(total.toFixed(6))}` };
   }
 
   held.sort((a, b) => {
@@ -150,7 +158,14 @@ export function planDeduction(batches: StockBatch[], needed: number): DeductionP
   for (const batch of held) {
     if (outstanding <= 0) break;
     const take = Math.min(batch.quantity, outstanding);
-    deductions.push({ index: batch.index, remaining: batch.quantity - take });
+    // An empty batch has nothing to give, and writing its level back is an update that
+    // sets "0" to "0".
+    if (take <= 0) continue;
+    // A batch this plan means to empty holds a float residue otherwise: 0.1 and 0.2
+    // against a line needing 0.3 leave 2.7755575615628914e-17 in the second row, which
+    // the route writes as that string and cooking can never clear.
+    const remaining = Math.abs(batch.quantity - take) < 1e-9 ? 0 : batch.quantity - take;
+    deductions.push({ index: batch.index, remaining });
     outstanding -= take;
   }
   return { ok: true, deductions };

@@ -22,7 +22,17 @@ export default function RecipeResultsPage() {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [generatingImage, setGeneratingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [cookSkipped, setCookSkipped] = useState<{ line: string; reason: string }[]>([]);
+  const [cookApplied, setCookApplied] = useState(false);
   const router = useRouter();
+
+  // Opening or closing the modal clears the last cook's report, so the next recipe
+  // does not inherit it.
+  const openRecipe = (recipe: Recipe | null) => {
+    setCookSkipped([]);
+    setCookApplied(false);
+    setSelectedRecipe(recipe);
+  };
 
   useEffect(() => {
     const storedRecipes = localStorage.getItem('generatedRecipes');
@@ -107,7 +117,7 @@ export default function RecipeResultsPage() {
           {recipes.map((recipe, index) => (
             <div
               key={index}
-              onClick={() => setSelectedRecipe(recipe)}
+              onClick={() => openRecipe(recipe)}
               className="bg-[#faa424ff] rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow"
             >
               <h2 className="text-2xl font-bold text-white mb-4">{recipe.name}</h2>
@@ -133,7 +143,7 @@ export default function RecipeResultsPage() {
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-3xl font-bold text-white">{selectedRecipe.name}</h2>
                 <button
-                  onClick={() => setSelectedRecipe(null)}
+                  onClick={() => openRecipe(null)}
                   className="text-white hover:text-amber-200"
                 >
                   <XMarkIcon className="h-6 w-6" />
@@ -213,7 +223,7 @@ export default function RecipeResultsPage() {
                 </ol>
               </div>
 
-              <div className="flex justify-center mt-8">
+              <div className="flex flex-col items-center mt-8">
                 <button
                   onClick={async () => {
                     try {
@@ -229,15 +239,42 @@ export default function RecipeResultsPage() {
                         throw new Error('Failed to update inventory');
                       }
 
-                      router.push('/home');
+                      // The route reports which lines it could not match, and a request
+                      // that deducted nothing is not a success. Leaving for /home either
+                      // way told the user the fridge had been updated when it had not.
+                      const data = await response.json();
+                      const skipped: { line: string; reason: string }[] = data.skipped ?? [];
+                      setCookSkipped(skipped);
+                      setCookApplied(Boolean(data.success));
+
+                      if (data.success && skipped.length === 0) {
+                        router.push('/home');
+                      }
                     } catch (error) {
                       console.error('Error updating inventory:', error);
                     }
                   }}
-                  className="bg-[#70994D] hover:bg-[#5a7d3c] text-white px-6 py-3 rounded-lg font-semibold"
+                  disabled={cookApplied}
+                  className="bg-[#70994D] hover:bg-[#5a7d3c] text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-60"
                 >
                   Cooked This Recipe
                 </button>
+                {cookSkipped.length > 0 && (
+                  <div className="mt-4 text-sm text-white">
+                    <p className="font-semibold">
+                      {cookApplied
+                        ? 'Deducted, except for these lines:'
+                        : 'Nothing was deducted:'}
+                    </p>
+                    <ul className="list-disc list-inside">
+                      {cookSkipped.map((entry, index) => (
+                        <li key={index}>
+                          {entry.line} - {entry.reason}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>
