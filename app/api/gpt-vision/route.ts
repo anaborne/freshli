@@ -51,6 +51,15 @@ export async function POST(req: Request) {
 
     try {
       const ingredients = JSON.parse(text);
+      // The prompt asks for a bare array, and the client maps over what comes back. A
+      // reply shaped { "ingredients": [...] } parses, so parsing alone is not enough to
+      // answer 200 with it.
+      if (!Array.isArray(ingredients)) {
+        return NextResponse.json(
+          { error: 'Model did not return an array', raw: text },
+          { status: 500 },
+        );
+      }
       return NextResponse.json({ ingredients });
     } catch (e) {
       console.error("❌ JSON Parse Error:", e);

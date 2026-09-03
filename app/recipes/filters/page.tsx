@@ -26,24 +26,33 @@ export default function RecipeFiltersPage() {
     setFilters(filters.filter(f => f !== filterToRemove));
   };
 
+  // The button is disabled while loading, so every exit from here has to clear it.
+  // /api/generate-recipes answers { error } on any OpenAI failure, and returning on
+  // that branch used to leave the spinner up for good with no way back but a reload.
   const handleGenerateRecipes = async () => {
     setLoading(true);
-    const selected = JSON.parse(localStorage.getItem('selectedIngredients') || '[]');
-    const res = await fetch('/api/generate-recipes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ingredients: selected, filters }),
-    });
+    try {
+      const selected = JSON.parse(localStorage.getItem('selectedIngredients') || '[]');
+      const res = await fetch('/api/generate-recipes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ingredients: selected, filters }),
+      });
 
-    const data = await res.json();
-    if (data.error) {
-      console.error('Error generating recipes:', data.error);
-      return;
+      const data = await res.json();
+      if (data.error) {
+        console.error('Error generating recipes:', data.error);
+        return;
+      }
+      localStorage.setItem('generatedRecipes', JSON.stringify(data.recipes || []));
+      router.push('/recipes/results');
+    } catch (error) {
+      console.error('Error generating recipes:', error);
+    } finally {
+      setLoading(false);
     }
-    localStorage.setItem('generatedRecipes', JSON.stringify(data.recipes || []));
-    router.push('/recipes/results');
   };
 
   return (

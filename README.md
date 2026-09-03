@@ -12,7 +12,7 @@ of groceries, GPT-3.5 Turbo for recipes, DALL-E 2 for recipe illustrations.
 npm install
 cp .env.example .env.local     # fill in the three values
 npm run dev                    # http://localhost:3000
-npm test                       # 28 unit tests, no network, no database
+npm test                       # 33 unit tests, no network, no database
 ```
 
 ## What it does
@@ -28,8 +28,9 @@ yellow / red by how long the item has left. Search filters across all columns.
 Upload a photo of your groceries. GPT-4o returns the ingredients it can see
 and the app pre-fills a card per item. You supply quantity, unit and
 expiration before anything is written, so the model proposes and you confirm.
-Adding stock that matches an existing row on name, unit and expiration merges
-into that row.
+Confirmed items are inserted as new rows. On the manual add form, stock that
+matches an existing row on name, unit and expiration merges into that row
+instead.
 
 ### Recipes from selected stock
 
@@ -47,7 +48,8 @@ with tests: [`lib/expiry.ts`](lib/expiry.ts) for the expiry banding and
 sorting. The pages and API routes call into those.
 
 Extracting that logic and writing tests against it turned up four live defects.
-Each is now pinned by a test that fails against the old behaviour.
+Three of them are now pinned by a test that fails against the old behaviour; the
+fourth was a build-config mistake that the pure-function suite cannot reach.
 
 1. Every expiration date was read a day early west of UTC. `new Date("2026-08-28")`
    parses a bare `YYYY-MM-DD` as UTC midnight per the spec, and it was compared
@@ -68,9 +70,11 @@ Each is now pinned by a test that fails against the old behaviour.
    exactly 1 lb instead of 1.5. It also read the number with `parseInt` where
    the rest of the pipeline uses `parseFloat`.
 4. Recipe images could not load. The `remotePatterns` entry allowing
-   `next/image` to fetch DALL-E URLs lived in `next.config.js`. Next 15 resolves
-   `next.config.ts` first and ignores the `.js` when both exist, so the allowlist
-   was inactive and `app/recipes/results` threw on every generated image.
+   `next/image` to fetch DALL-E URLs lived in `next.config.ts`, and a
+   `next.config.js` sat next to it. Next 15 resolves `next.config.js` before
+   `next.config.ts` and ignores the `.ts` when both exist, so the allowlist was
+   inactive and `app/recipes/results` threw on every generated image. The `.js`
+   file is gone.
 
 A fifth defect was less visible. A failed Supabase lookup returned `null` data
 and the insert path treated that as "no such row", so a transient error
@@ -79,16 +83,18 @@ created a duplicate row. The error is now checked before the branch.
 ## Tests
 
 ```bash
-npm test          # vitest, 28 tests
+npm test          # vitest, 33 tests
 npm run typecheck # tsc --noEmit
 npm run lint      # next lint
+npm run build     # needs the three .env.local values; the OpenAI client is constructed at module load
 ```
 
 The tests are pure functions only: no network, no database, no OpenAI key, no
-component rendering. They run in about 150ms. CI runs typecheck, lint and tests
-on every push, and runs the test suite again under UTC, America/New_York,
-Asia/Tokyo and Pacific/Kiritimati, because the logic they cover is
-timezone-sensitive and the defect they replaced only reproduced west of UTC.
+component rendering. They run in well under a second. CI runs typecheck, lint
+and tests on pushes to main and on every pull request, and runs the test suite
+again under UTC, America/New_York, Asia/Tokyo and Pacific/Kiritimati, because
+the logic they cover is timezone-sensitive and the defect they replaced only
+reproduced west of UTC.
 
 The React components, the Supabase round trips and the three OpenAI calls are
 not covered by the suite, and exercising them needs a live project and live

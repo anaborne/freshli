@@ -97,6 +97,65 @@ export function groupByCategory(
   return grouped;
 }
 
+export type StockBatch = {
+  quantity: string | number;
+  expirationDate: string;
+};
+
+/** One batch's share of a deduction, as an index into the batches passed in. */
+export type BatchDeduction = {
+  index: number;
+  /** What the batch holds once its share is taken out. */
+  remaining: number;
+};
+
+export type DeductionPlan =
+  | { ok: true; deductions: BatchDeduction[] }
+  | { ok: false; reason: string };
+
+/**
+ * How much of a recipe line comes out of each batch of the same food. A recipe line
+ * carries a food and a unit with no expiration date, so every batch under that name and
+ * unit is a candidate, and the soonest to expire is emptied first. The whole plan is
+ * built before any row is written, so a line the fridge cannot cover deducts nothing.
+ */
+export function planDeduction(batches: StockBatch[], needed: number): DeductionPlan {
+  const held = batches.map((batch, index) => ({
+    index,
+    quantity:
+      typeof batch.quantity === "number"
+        ? batch.quantity
+        : Number.parseFloat(String(batch.quantity)),
+    expiry: parseLocalDate(batch.expirationDate ?? "").getTime(),
+  }));
+
+  if (held.some((batch) => !Number.isFinite(batch.quantity))) {
+    return { ok: false, reason: "inventory quantity is not a number" };
+  }
+
+  const total = held.reduce((sum, batch) => sum + batch.quantity, 0);
+  if (total < needed) {
+    return { ok: false, reason: `needs ${needed}, inventory has ${total}` };
+  }
+
+  held.sort((a, b) => {
+    if (Number.isNaN(a.expiry) && Number.isNaN(b.expiry)) return 0;
+    if (Number.isNaN(a.expiry)) return 1;
+    if (Number.isNaN(b.expiry)) return -1;
+    return a.expiry - b.expiry;
+  });
+
+  const deductions: BatchDeduction[] = [];
+  let outstanding = needed;
+  for (const batch of held) {
+    if (outstanding <= 0) break;
+    const take = Math.min(batch.quantity, outstanding);
+    deductions.push({ index: batch.index, remaining: batch.quantity - take });
+    outstanding -= take;
+  }
+  return { ok: true, deductions };
+}
+
 /** Case-insensitive substring match on the name. An empty query matches all. */
 export function filterByName(items: Ingredient[], query: string): Ingredient[] {
   const q = query.trim().toLowerCase();

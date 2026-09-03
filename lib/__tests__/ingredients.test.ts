@@ -6,6 +6,7 @@ import {
   groupByCategory,
   mergeDuplicates,
   parseRecipeIngredient,
+  planDeduction,
   sortByExpiry,
 } from "@/lib/ingredients";
 import { Ingredient } from "@/types/ingredient";
@@ -87,6 +88,53 @@ describe("mergeDuplicates", () => {
     const rows = [item({ quantity: "2" }), item({ quantity: "3" })];
     mergeDuplicates(rows);
     expect(rows[0].quantity).toBe("2");
+  });
+});
+
+describe("planDeduction", () => {
+  const batch = (quantity: string | number, expirationDate: string) => ({
+    quantity,
+    expirationDate,
+  });
+
+  it("takes from the soonest-expiring batch first", () => {
+    expect(planDeduction([batch("5", "2026-09-20"), batch("5", "2026-09-02")], 3)).toEqual({
+      ok: true,
+      deductions: [{ index: 1, remaining: 2 }],
+    });
+  });
+
+  it("spreads one line across batches when the soonest runs out", () => {
+    // The route used to key inventory by name, so only one of these two rows existed
+    // as far as it was concerned and the other could never be deducted.
+    expect(planDeduction([batch("1", "2026-09-02"), batch("4", "2026-09-20")], 3)).toEqual({
+      ok: true,
+      deductions: [
+        { index: 0, remaining: 0 },
+        { index: 1, remaining: 2 },
+      ],
+    });
+  });
+
+  it("counts every batch before calling a line short", () => {
+    expect(planDeduction([batch("1", "2026-09-02"), batch("4", "2026-09-20")], 6)).toEqual({
+      ok: false,
+      reason: "needs 6, inventory has 5",
+    });
+  });
+
+  it("deducts nothing when a quantity cannot be read as a number", () => {
+    expect(planDeduction([batch("about two", "2026-09-02")], 1)).toEqual({
+      ok: false,
+      reason: "inventory quantity is not a number",
+    });
+  });
+
+  it("uses a batch with an unreadable expiration date last", () => {
+    expect(planDeduction([batch("2", ""), batch("2", "2026-09-02")], 2)).toEqual({
+      ok: true,
+      deductions: [{ index: 1, remaining: 0 }],
+    });
   });
 });
 

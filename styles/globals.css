@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Tailwind v4 does not pick up tailwind.config.ts on its own. Without this line the
+   file is inert and the font-rubik utility used in app/layout.tsx generates nothing. */
+@config "../tailwind.config.ts";
 
 :root {
   --background: #ffffff;

@@ -45,6 +45,9 @@ export default function EditIngredientPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // The same food can sit in the table twice under two expirations, so the row is
+    // identified the way the fetch above and the delete below identify it: name, unit
+    // and expiration together. Filtering on the name alone rewrote every batch.
     const { error } = await supabase
       .from('ingredients')
       .update({
@@ -52,7 +55,9 @@ export default function EditIngredientPage() {
         unit,
         expiration_date: expirationDate,
       })
-      .eq('name', decodeURIComponent(name as string));
+      .eq('name', decodeURIComponent(name as string))
+      .eq('unit', originalData.unit)
+      .eq('expiration_date', originalData.expiration_date);
 
     if (error) {
       console.error('Failed to update ingredient:', error.message);

@@ -66,20 +66,28 @@ export default function InventoryPage() {
             return;
         }
 
-        if (data) {
-            const updatedQuantity = (parseFloat(data.quantity) || 0) + (parseFloat(quantity) || 0);
-            await supabase
+        // The write is checked for the same reason the lookup is. Reporting "Saved!" and
+        // then clearing the form on a rejected write loses what the user typed and sends
+        // them to a dashboard that does not have the item.
+        const { error: writeError } = data
+            ? await supabase
                 .from('ingredients')
-                .update({ quantity: updatedQuantity.toString() })
-                .eq('id', data.id);
-        } else {
-            await supabase.from('ingredients').insert([{
+                .update({
+                    quantity: ((parseFloat(data.quantity) || 0) + (parseFloat(quantity) || 0)).toString(),
+                })
+                .eq('id', data.id)
+            : await supabase.from('ingredients').insert([{
                 name: capitalizedName,
                 quantity,
                 unit: lowercaseUnit,
                 expiration_date: expirationDate,
                 category,
             }]);
+
+        if (writeError) {
+            console.error('Error saving ingredient:', writeError.message);
+            setIsSaving(false);
+            return;
         }
 
         setIsSaving(false);
@@ -147,13 +155,20 @@ export default function InventoryPage() {
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ');
 
-        await supabase.from('ingredients').insert([{
+        const { error } = await supabase.from('ingredients').insert([{
           name: capitalizedName,
           quantity: item.quantity || '',
           unit: item.unit || '',
           expiration_date: item.expirationDate || '',
           category: item.category || 'miscellaneous',
         }]);
+
+        // Stop on the first rejected insert. Reporting "Ingredients added!" and then
+        // clearing the cards would lose everything the user filled in.
+        if (error) {
+          console.error('Error adding ingredient:', error.message);
+          return;
+        }
       }
 
       setShowToast(true);

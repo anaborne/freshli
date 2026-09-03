@@ -1,12 +1,28 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
-import { parseRecipeIngredient } from '@/lib/ingredients';
+import { parseRecipeIngredient, planDeduction } from '@/lib/ingredients';
+
+type InventoryRow = {
+  id: number | string;
+  name: string;
+  quantity: string | number;
+  unit: string;
+  expiration_date: string;
+};
+
+const normalize = (value: unknown) => String(value ?? '').trim().toLowerCase();
 
 /**
  * A recipe line is either "Name (quantity unit)" or a basic essential with no quantity,
  * and a quantity-less line deducts one unit. Parsing lives in lib/ingredients so the
  * tests cover it: the regex that used to be inline here matched integers only, so
  * "Chicken Thighs (1.5 lb)" took the quantity-less path and deducted 1.
+ *
+ * Inventory is matched on the name and the unit the parser read, which is the identity
+ * the rest of the app uses (mergeKey in lib/ingredients). Keying it by name alone hid
+ * every batch but the last row Postgres happened to return, and it let a line measured
+ * in tbsp decrement a row stored in lb. Where several batches match, planDeduction takes
+ * the soonest to expire first.
  */
 export async function POST(request: Request) {
   try {
@@ -18,42 +34,45 @@ export async function POST(request: Request) {
     const { data: inventory, error: fetchError } = await supabase.from('ingredients').select('*');
     if (fetchError) throw fetchError;
 
-    const byName = new Map<string, { id: number | string; quantity: string | number }>();
-    for (const row of inventory ?? []) {
-      byName.set(String(row.name).trim().toLowerCase(), row);
-    }
+    const rows = (inventory ?? []) as InventoryRow[];
 
     const applied: string[] = [];
     const skipped: { line: string; reason: string }[] = [];
 
     for (const line of ingredients as string[]) {
       const parsed = parseRecipeIngredient(line);
-      const name = (parsed?.name ?? line).trim().toLowerCase();
+      const name = normalize(parsed?.name ?? line);
+      const unit = parsed ? normalize(parsed.unit) : null;
       const used = parsed?.quantity ?? 1;
 
-      const row = byName.get(name);
-      if (!row) {
+      // A line with no quantity carries no unit either, so it matches on the name alone.
+      const batches = rows.filter(
+        (row) => normalize(row.name) === name && (unit === null || normalize(row.unit) === unit),
+      );
+      if (batches.length === 0) {
         skipped.push({ line, reason: 'not in inventory' });
         continue;
       }
 
-      const current = Number.parseFloat(String(row.quantity));
-      if (!Number.isFinite(current)) {
-        skipped.push({ line, reason: 'inventory quantity is not a number' });
+      const plan = planDeduction(
+        batches.map((row) => ({ quantity: row.quantity, expirationDate: row.expiration_date })),
+        used,
+      );
+      if (!plan.ok) {
+        skipped.push({ line, reason: plan.reason });
         continue;
       }
 
-      const remaining = current - used;
-      if (remaining < 0) {
-        skipped.push({ line, reason: `needs ${used}, inventory has ${current}` });
-        continue;
+      for (const deduction of plan.deductions) {
+        const row = batches[deduction.index];
+        const { error: updateError } = await supabase
+          .from('ingredients')
+          .update({ quantity: String(deduction.remaining) })
+          .eq('id', row.id);
+        if (updateError) throw updateError;
+        // Later lines in the same request read the level this line left behind.
+        row.quantity = String(deduction.remaining);
       }
-
-      const { error: updateError } = await supabase
-        .from('ingredients')
-        .update({ quantity: String(remaining) })
-        .eq('id', row.id);
-      if (updateError) throw updateError;
       applied.push(line);
     }
 
