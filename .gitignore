@@ -42,3 +42,9 @@ next-env.d.ts
 .env
 .env.*
 !.env.example
+
+# added 2026-09-08 during disk cleanup
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
